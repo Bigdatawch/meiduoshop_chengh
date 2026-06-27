@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <span v-bind:title="message">Hover over me</span>
+        <button v-on:click="login">登录</button>
+        <hr>
+        <input type="text" id="add" class="add-input" v-model="addInput">
+        <button class="add-btn" @click="addTodo">添加</button>
+        <ol class="todo-list">
+            <li class="todo-item" v-for="todo in todoList">
+                {{ todo }}
+                <button @click="deleteTodo(todoList.indexOf(todo))">删除</button>
+            </li>
+        </ol>
+    </div>
+</body>
+<script type="text/javascript">
+    new Vue({
+        el: '#app',
+        data: {
+            message: '页面加载于 ' + new Date().toLocaleString(),
+            todoList: ['学习 Vue', '学习 JavaScript', '学习 HTML'],
+            addInput: ''
+        },
+        methods: {
+            login: function() {
+                // 登录逻辑
+                alert('登录成功');
+            },
+            addTodo: function() {
+                this.todoList.push(this.addInput);
+                this.addInput = '';
+            },
+            deleteTodo: function(index) {
+                this.todoList.splice(index, 1);
+            }
+        }
+    });
+</script>
+</html>
