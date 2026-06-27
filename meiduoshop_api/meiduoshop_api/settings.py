@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+# 加载 .env 文件
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ady!=7me(z@@=eox-*6qyp$lm43wi=(jt&=a7^h&o+ln%pk77-"
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-ady!=7me(z@@=eox-*6qyp$fdhdfh=(jt&=a7^h&o+ln%pk77-")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -81,10 +86,10 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "meiduoshop",
-        "USER": "root",
-        "PASSWORD": "wch20030915",
+        "USER": "chengh",
+        "PASSWORD": os.getenv("DB_PASSWORD", ""),
         "HOST": "localhost",
-        "PORT": "3306",
+        "PORT": "3307",
     }
 }
 
@@ -129,3 +134,32 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Redis 缓存配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://:{os.getenv('REDIS_PASSWORD', '')}@localhost:6378/0",
+        "KEY_PREFIX": "meiduoshop",  # 自定义前缀，替代默认的 :1:
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100},
+        }
+    },
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://:{os.getenv('REDIS_PASSWORD', '')}@localhost:6378/1",
+        "KEY_PREFIX": "session",  # Session 缓存前缀
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100},
+        }
+    },
+}
+
+# 使用 Redis 作为 Session 后端
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"  # 缓存+数据库
+SESSION_CACHE_ALIAS = "session"
+
+# Session 过期时间（秒），默认1200秒
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 7天
