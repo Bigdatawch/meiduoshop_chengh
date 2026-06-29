@@ -5,6 +5,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
     port: 8080,
+    allowedHosts: ['www.meiduo.site'],
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
